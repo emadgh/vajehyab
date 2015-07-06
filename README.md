@@ -5,7 +5,7 @@ Simply create an instance of `VajehYab` and `Search`
 
 ```golang
 vy := vajehyab.VajehYab{Developer: "YourDeveloperName"}
-vajeh, err := vy.Search(update.Message.Text)
+vajeh, err := vy.Search("واژه")
 if err != nil {
 	panic(err)
 	return err
