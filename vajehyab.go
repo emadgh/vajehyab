@@ -26,11 +26,11 @@ type Search struct {
 }
 
 type Data struct {
-	Title         string `json:"title"`
-	Pronunciation string `json:"pronunciation"`
-	Text          string `json:"text"`
-	Source        string `json:"source"`
-	Permalink     string `json:"permalink"`
+	Title         StringBool `json:"title"`
+	Pronunciation StringBool `json:"pronunciation"`
+	Text          StringBool `json:"text"`
+	Source        StringBool `json:"source"`
+	Permalink     StringBool `json:"permalink"`
 }
 
 type Error struct {
@@ -40,6 +40,24 @@ type Error struct {
 type Ads struct {
 	Text string `json:"text"`
 	Url  string `json:"url"`
+}
+
+type StringBool string
+
+func (a *StringBool) UnmarshalJSON(b []byte) (err error) {
+	s, n := "", false
+	if err = json.Unmarshal(b, &s); err == nil {
+		*a = StringBool(s)
+		return
+	}
+	if err = json.Unmarshal(b, &n); err == nil {
+		*a = ""
+		return
+	}
+	return
+}
+func (a *StringBool) ToString() string {
+	return string(*a)
 }
 
 func (vy *VajehYab) Search(word string) (*Result, error) {
@@ -60,8 +78,11 @@ func (vy *VajehYab) Search(word string) (*Result, error) {
 		return nil, err
 	}
 
+	// removing 3 chars, they are mistaken and cousing errors
+	robots = robots[3:]
+
 	vajeh := Result{}
-	err = json.Unmarshal(robots[4:], &vajeh)
+	err = json.Unmarshal(robots, &vajeh)
 	if err != nil {
 		return nil, err
 	}
